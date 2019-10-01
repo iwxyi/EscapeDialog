@@ -7,6 +7,7 @@
 
 class HoverButton : public QPushButton
 {
+    Q_OBJECT
 public:
     HoverButton(QWidget* parent = nullptr);
     HoverButton(QString text, QWidget* parent = nullptr);

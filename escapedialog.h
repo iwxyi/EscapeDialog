@@ -9,6 +9,7 @@
 
 class EscapeDialog : public QDialog
 {
+#define MARGIN 20
 public:
     EscapeDialog(QString title, QString msg, QString esc, QString nor, QWidget* parent = nullptr);
 
@@ -24,6 +25,8 @@ public slots:
 private:
     QLabel* msg_lab;
     HoverButton* esc_btn, *nor_btn;
+
+    bool exchanged; // 两个按钮是否交换了位置
 };
 
 #endif // ESCAPEDIALOG_H

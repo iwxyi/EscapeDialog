@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "escapedialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -12,5 +13,6 @@ public:
     ~MainWindow();
 
 private:
+    QPushButton* btn;
 };
 #endif // MAINWINDOW_H
