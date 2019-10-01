@@ -5,11 +5,17 @@
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QDateTime>
+#include <random>
+#include <QDebug>
+#include <QPropertyAnimation>
+#include <QTimer>
 #include "hoverbutton.h"
 
 class EscapeDialog : public QDialog
 {
 #define MARGIN 20
+    Q_OBJECT
 public:
     EscapeDialog(QString title, QString msg, QString esc, QString nor, QWidget* parent = nullptr);
 
@@ -18,18 +24,26 @@ protected:
 
 private:
     void resetBtnPos();
+    qint64 getTimestamp();
+    int getRandom(int min, int max);
+    bool isEqual(int a, int b);
 
 public slots:
-    void slotPosEntered(QPoint point);
-    void slotEscapeButton(QPoint p);
-    void slotExchangeButton();
+    void slotPosEntered(QPoint point); // 鼠标进入事件：移动按钮或者交换按钮
+    void slotEscapeButton(QPoint p);   // 移动按钮
+    void slotExchangeButton();         // 交换按钮
 
 private:
     QLabel* msg_lab;
     HoverButton* esc_btn, *nor_btn;
 
+    std::random_device rd;
+    std::mt19937 mt;
+
     bool exchanged; // 两个按钮是否交换了位置
     int escape_count; // 跑动的次数（包括交换）
+    int last_escape_index; // 上次交换位置的次数（免得经常性的交换）
+    bool has_overlapped; // 是否和另一个按钮进行重叠
 };
 
 #endif // ESCAPEDIALOG_H
