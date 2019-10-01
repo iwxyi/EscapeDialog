@@ -45,10 +45,23 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
             slotExchangeButton();
     });
 
-    connect(esc_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){
+    connect(esc_btn, &HoverButton::signalMousePressed, [=]{ // 没有交换的情况下还是被点到了，赶紧跑掉
+        if (!exchanged)
+            slotEscapeButton(QPoint());
+    });
+
+    connect(esc_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){ // 内部屏蔽回车键，外部转移焦点至另一个按钮
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
         {
             nor_btn->setFocus();
+            event->accept();
+        }
+    });
+
+    connect(nor_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){ // 内部屏蔽回车键，外部转移焦点至另一个按钮
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+        {
+            this->setFocus();
             event->accept();
         }
     });
@@ -183,7 +196,7 @@ void EscapeDialog::slotEscapeButton(QPoint p)
         QTimer::singleShot(!has_overlapped?4000:2000, [=]{
             nor_btn->setText(text);
         });
-        QTimer::singleShot(getRandom(4000, 10000), [=]{
+        QTimer::singleShot(getRandom(6000, 10000), [=]{
             last_escape_index = escape_count;
             slotEscapeButton(QPoint());
             has_overlapped = true;
