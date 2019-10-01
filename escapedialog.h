@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QPropertyAnimation>
 #include <QTimer>
+#include <QKeyEvent>
 #include "hoverbutton.h"
 
 class EscapeDialog : public QDialog
@@ -35,7 +36,7 @@ public slots:
 
 private:
     QLabel* msg_lab;
-    HoverButton* esc_btn, *nor_btn;
+    HoverButton* esc_btn/*accept*/, *nor_btn/*reject*/;
 
     std::random_device rd;
     std::mt19937 mt;

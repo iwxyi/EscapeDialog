@@ -9,7 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     btn->move(100, 100);
     connect(btn, &QPushButton::clicked, [=]{
        EscapeDialog dia("title", "msg", "esc", "nor", this);
-       dia.exec();
+       if (dia.exec())
+           qDebug() << "Dialog:Accept";
+       else
+           qDebug() << "Dialog:Reject";
     });
 }
 

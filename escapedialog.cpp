@@ -23,18 +23,19 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
 
     resetBtnPos();
     nor_btn->setFocus();
+    esc_btn->banEnter();
 
     connect(nor_btn, &HoverButton::clicked, [=]{ // 接受（不进行任何操作）
         if (!exchanged)
-            this->accept();
-        else
             this->reject();
+        else
+            this->accept();
     });
     connect(esc_btn, &HoverButton::clicked, [=]{ // 拒绝（点不到的操作）
         if (!exchanged)
-            this->reject();
-        else
             this->accept();
+        else
+            this->reject();
     });
 
     connect(esc_btn, SIGNAL(signalEntered(QPoint)), this, SLOT(slotPosEntered(QPoint))); // 进入按钮（移动按钮或者交换位置）
@@ -42,6 +43,14 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
     connect(esc_btn, &HoverButton::signalLeaved, [=](QPoint){ // 离开按钮（如果两个按钮互换了，换回来）
         if (exchanged)
             slotExchangeButton();
+    });
+
+    connect(esc_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){
+        if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+        {
+            nor_btn->setFocus();
+            event->accept();
+        }
     });
 }
 
@@ -111,7 +120,7 @@ void EscapeDialog::slotEscapeButton(QPoint p)
 {
     QPoint aim_pos(esc_btn->pos()); // 移动的目标点的位置
     QRect geo = esc_btn->geometry();
-    qDebug() << "escape_count" << escape_count;
+//    qDebug() << "escape_count" << escape_count;
 
     // 前三次，只在一定范围内移动
     if (escape_count <= 3)
@@ -140,9 +149,12 @@ void EscapeDialog::slotEscapeButton(QPoint p)
         aim_pos = nor_btn->pos();
         QString text = nor_btn->text();
         nor_btn->setText("在我下面");
-        QTimer::singleShot(3000, [=]{
-            nor_btn->setText("你点不到");
-        });
+        if (!has_overlapped)
+        {
+            QTimer::singleShot(3000, [=]{
+                nor_btn->setText("你点不到");
+            });
+        }
         QTimer::singleShot(6000, [=]{
             nor_btn->setText(text);
         });

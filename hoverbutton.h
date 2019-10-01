@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QPushButton>
+#include <QKeyEvent>
 
 class HoverButton : public QPushButton
 {
@@ -11,6 +12,8 @@ class HoverButton : public QPushButton
 public:
     HoverButton(QWidget* parent = nullptr);
     HoverButton(QString text, QWidget* parent = nullptr);
+
+    void banEnter();
 
 protected:
     void enterEvent(QEvent* event) override;
@@ -28,6 +31,8 @@ signals:
     void signalKeyPressed(QKeyEvent* event);
     void signalKeyReleased(QKeyEvent* event);
 
+private:
+    bool ban_enter;
 };
 
 #endif // HOVERBUTTON_H
