@@ -1,7 +1,8 @@
 #include "escapedialog.h"
 
 EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor, QWidget *parent)
-    : QDialog(parent), mt(rd()), exchanged(false), escape_count(0), last_escape_index(0), has_overlapped(false)
+    : QDialog(parent), mt(rd()),
+      exchanged(false), escape_count(0), last_escape_index(0), has_overlapped(false)
 {
     setWindowTitle(title);
 
@@ -14,7 +15,8 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
     main_vlayout->setMargin(MARGIN);
     setLayout(main_vlayout);
 
-    setMinimumSize(qMax(msg_lab->width()+MARGIN*2, esc_btn->width()+nor_btn->width()+MARGIN*4), msg_lab->height()+esc_btn->height()+MARGIN*3);
+    setMinimumSize(qMax(msg_lab->width()+MARGIN*2, esc_btn->width()+nor_btn->width()+MARGIN*4),
+                   msg_lab->height()+esc_btn->height()+MARGIN*3);
     int btn_w = qMax(esc_btn->width(), nor_btn->width());
     esc_btn->setFixedWidth(btn_w);
     nor_btn->setFixedWidth(btn_w);
@@ -85,7 +87,7 @@ void EscapeDialog::slotPosEntered(QPoint point)
 {
     // 判断移动按钮还是交换按钮
     bool is_exchanged = false;
-    if (escape_count > 10 && escape_count - last_escape_index > 5 && getRandom(1, 10)==1)
+    if (escape_count > 10 && escape_count - last_escape_index > 5 && getRandom(1, 20)==1)
         is_exchanged = true;
 
     // 移动按钮
@@ -132,14 +134,21 @@ void EscapeDialog::slotEscapeButton(QPoint p)
             aim_pos = nor_btn->pos() + QPoint(-MARGIN-esc_btn->width(), 0);
         }
     }
-    else if (escape_count == 50) // 50次，直接躲到另一个按钮下面（需要用按键才能解决）
+    else if (escape_count % 100 == 50) // 50次，直接躲到另一个按钮下面（需要用按键才能解决）
     {
         // 注意：如果两个按钮大小不一样则没什么意义了（普通按钮小的话，鼠标点得到）
         aim_pos = nor_btn->pos();
         QString text = nor_btn->text();
         nor_btn->setText("在我下面");
         QTimer::singleShot(3000, [=]{
+            nor_btn->setText("你点不到");
+        });
+        QTimer::singleShot(6000, [=]{
             nor_btn->setText(text);
+        });
+        QTimer::singleShot(getRandom(6000, 12000), [=]{
+            last_escape_index = escape_count;
+            slotEscapeButton(QPoint());
         });
     }
     // 后面就随便跑啦
@@ -151,7 +160,8 @@ void EscapeDialog::slotEscapeButton(QPoint p)
         } while ( // 如果在原来的范围内，或者鼠标点到的地方，则重新判断
                  (aim_pos.x()>=geo.left() && aim_pos.x()<=geo.right())
               || (aim_pos.y()>=geo.top() && aim_pos.y()<=geo.bottom())
-              || QRect(aim_pos.x(), aim_pos.y(), geo.width(), geo.height()).contains(p, false)
+              || QRect(aim_pos.x(), aim_pos.y(), geo.width(), geo.height())
+                  .contains(mapFromGlobal(QCursor::pos()), false)
                  );
     }
 
@@ -171,4 +181,5 @@ void EscapeDialog::slotExchangeButton()
     esc_btn->setText(text2);
     nor_btn->setText(text1);
     exchanged = !exchanged;
+    last_escape_index = escape_count;
 }
