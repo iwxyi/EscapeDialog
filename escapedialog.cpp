@@ -60,11 +60,36 @@ void EscapeDialog::resizeEvent(QResizeEvent *event)
     return QDialog::resizeEvent(event);
 }
 
+void EscapeDialog::leaveEvent(QEvent *event)
+{
+    recoverEscBtnPos();
+    return QDialog::leaveEvent(event);
+}
+
 void EscapeDialog::resetBtnPos()
 {
     int w = width(), h = height();
     nor_btn->move(w-MARGIN-nor_btn->width(), h-MARGIN-nor_btn->height());
     esc_btn->move(nor_btn->geometry().left()-MARGIN-esc_btn->width(), nor_btn->geometry().top());
+}
+
+void EscapeDialog::recoverEscBtnPos()
+{
+    if (esc_btn->pos() == QPoint(0,0)) // 初始化中
+        return resetBtnPos();
+
+    moveEscBtnAni(QPoint(nor_btn->geometry().left()-MARGIN-esc_btn->width(), nor_btn->geometry().top()));
+}
+
+void EscapeDialog::moveEscBtnAni(QPoint aim_pos)
+{
+    QPropertyAnimation* ani = new QPropertyAnimation(esc_btn, "pos");
+    ani->setStartValue(esc_btn->pos());
+    ani->setEndValue(aim_pos);
+    ani->setEasingCurve(QEasingCurve::OutQuint);
+    ani->setDuration(100 + static_cast<int>(sqrt((esc_btn->pos()-aim_pos).manhattanLength())));
+    ani->start();
+    connect(ani, SIGNAL(finished()), ani, SLOT(deleteLater()));
 }
 
 qint64 EscapeDialog::getTimestamp()
@@ -178,13 +203,7 @@ void EscapeDialog::slotEscapeButton(QPoint p)
                  );
     }
 
-    QPropertyAnimation* ani = new QPropertyAnimation(esc_btn, "pos");
-    ani->setStartValue(esc_btn->pos());
-    ani->setEndValue(aim_pos);
-    ani->setEasingCurve(QEasingCurve::OutQuint);
-    ani->setDuration(100 + static_cast<int>(sqrt((esc_btn->pos()-aim_pos).manhattanLength())));
-    ani->start();
-    connect(ani, SIGNAL(finished()), ani, SLOT(deleteLater()));
+    moveEscBtnAni(aim_pos);
 }
 
 void EscapeDialog::slotExchangeButton()

@@ -22,9 +22,12 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void leaveEvent(QEvent* event) override;
 
 private:
     void resetBtnPos();
+    void recoverEscBtnPos();
+    void moveEscBtnAni(QPoint aim);
     qint64 getTimestamp();
     int getRandom(int min, int max);
     bool isEqual(int a, int b);
