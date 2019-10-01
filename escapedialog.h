@@ -33,9 +33,9 @@ private:
     bool isEqual(int a, int b);
 
 public slots:
-    void slotPosEntered(QPoint point); // 鼠标进入事件：移动按钮或者交换按钮
-    void slotEscapeButton(QPoint p);   // 移动按钮
-    void slotExchangeButton();         // 交换按钮
+    void slotPosEntered(QPoint point);           // 鼠标进入事件：移动按钮或者交换按钮
+    void slotEscapeButton(QPoint p = QPoint());  // 移动按钮
+    void slotExchangeButton();                   // 交换按钮
 
 private:
     QLabel* msg_lab;

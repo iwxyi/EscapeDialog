@@ -10,9 +10,9 @@ HoverButton::HoverButton(QString text, QWidget *parent) : QPushButton(text, pare
 
 }
 
-void HoverButton::banEnter()
+void HoverButton::banEnter(bool ban)
 {
-    ban_enter = true;
+    ban_enter = ban;
 }
 
 void HoverButton::enterEvent(QEvent *event)

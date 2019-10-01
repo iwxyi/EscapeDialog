@@ -47,7 +47,7 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
 
     connect(esc_btn, &HoverButton::signalMousePressed, [=]{ // 没有交换的情况下还是被点到了，赶紧跑掉
         if (!exchanged)
-            slotEscapeButton(QPoint());
+            slotEscapeButton();
     });
 
     connect(esc_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){ // 内部屏蔽回车键，外部转移焦点至另一个按钮
@@ -58,13 +58,25 @@ EscapeDialog::EscapeDialog(QString title, QString msg, QString esc, QString nor,
         }
     });
 
-    connect(nor_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){ // 内部屏蔽回车键，外部转移焦点至另一个按钮
+    /*connect(nor_btn, &HoverButton::signalKeyPressed, [=](QKeyEvent* event){ // 内部屏蔽回车键，外部转移焦点至另一个按钮
         if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
         {
-            this->setFocus();
-            event->accept();
+            esc_btn->setFocus();
+            event->ignore();
+
+            // 被点到的情况：两个按钮交换，焦点在nor（显示esc），按回车键相当于点击
+
+            // 赶紧恢复原来的
+            slotExchangeButton();
+            slotEscapeButton(); // 鼠标下的那个按钮也逃掉
+
+            // 显示机智的信息
+            nor_btn->setText("继续加油");
+            QTimer::singleShot(2000, [=]{ // 会导致崩溃（点击后窗口删除，相当于 nullptr，无法进行操作）
+                nor_btn->setText(exchanged ? esc : nor);
+            });
         }
-    });
+    });*/
 }
 
 void EscapeDialog::resizeEvent(QResizeEvent *event)
@@ -134,7 +146,7 @@ void EscapeDialog::slotPosEntered(QPoint point)
 {
     // 判断移动按钮还是交换按钮
     bool is_exchanged = false;
-    if (escape_count > 10 && escape_count - last_escape_index > 5 && getRandom(1, 20)==1)
+    if (escape_count > 10 && escape_count - last_escape_index > 5 && getRandom(1, 20/*概率*/)==1)
         is_exchanged = true;
 
     // 移动按钮
@@ -198,7 +210,7 @@ void EscapeDialog::slotEscapeButton(QPoint p)
         });
         QTimer::singleShot(getRandom(6000, 10000), [=]{
             last_escape_index = escape_count;
-            slotEscapeButton(QPoint());
+            slotEscapeButton();
             has_overlapped = true;
         });
     }
@@ -225,6 +237,9 @@ void EscapeDialog::slotExchangeButton()
     QString text2 = nor_btn->text();
     esc_btn->setText(text2);
     nor_btn->setText(text1);
+    esc_btn->banEnter(exchanged);
+    nor_btn->banEnter(!exchanged);
+
     exchanged = !exchanged;
     last_escape_index = escape_count;
 }

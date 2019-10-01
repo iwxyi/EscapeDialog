@@ -13,7 +13,7 @@ public:
     HoverButton(QWidget* parent = nullptr);
     HoverButton(QString text, QWidget* parent = nullptr);
 
-    void banEnter();
+    void banEnter(bool ban = true);
 
 protected:
     void enterEvent(QEvent* event) override;
