@@ -21,12 +21,15 @@ private:
 
 public slots:
     void slotPosEntered(QPoint point);
+    void slotEscapeButton(QPoint p);
+    void slotExchangeButton();
 
 private:
     QLabel* msg_lab;
     HoverButton* esc_btn, *nor_btn;
 
     bool exchanged; // 两个按钮是否交换了位置
+    int escape_count; // 跑动的次数（包括交换）
 };
 
 #endif // ESCAPEDIALOG_H

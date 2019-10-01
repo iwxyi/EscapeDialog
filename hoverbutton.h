@@ -14,9 +14,11 @@ public:
 
 protected:
     void enterEvent(QEvent* event);
+    void leaveEvent(QEvent* event);
 
 signals:
     void signalEntered(QPoint point);
+    void signalLeaved(QPoint point);
 };
 
 #endif // HOVERBUTTON_H
