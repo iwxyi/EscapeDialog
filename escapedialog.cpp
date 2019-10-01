@@ -151,16 +151,17 @@ void EscapeDialog::slotEscapeButton(QPoint p)
         nor_btn->setText("在我下面");
         if (!has_overlapped)
         {
-            QTimer::singleShot(3000, [=]{
+            QTimer::singleShot(2000, [=]{
                 nor_btn->setText("你点不到");
             });
         }
-        QTimer::singleShot(6000, [=]{
+        QTimer::singleShot(!has_overlapped?4000:2000, [=]{
             nor_btn->setText(text);
         });
-        QTimer::singleShot(getRandom(6000, 12000), [=]{
+        QTimer::singleShot(getRandom(4000, 10000), [=]{
             last_escape_index = escape_count;
             slotEscapeButton(QPoint());
+            has_overlapped = true;
         });
     }
     // 后面就随便跑啦
